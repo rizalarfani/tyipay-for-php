@@ -15,6 +15,11 @@ class Requestor
         return Requestor::Call($url, $apiKey, $dataHash, 'GET');
     }
 
+    public static function post($url, $apiKey, $dataHash)
+    {
+        return Requestor::Call($url, $apiKey, $dataHash, 'POST');
+    }
+
     /**
      * send request to API server
      * 
@@ -36,6 +41,9 @@ class Requestor
             }
         }
 
+        if ($method == 'GET') {
+            if ($dataHash) $url .= '?' . http_build_query($dataHash);
+        }
         $curl_options = array(
             CURLOPT_URL => $url,
             CURLOPT_HTTPHEADER => array(
@@ -43,9 +51,9 @@ class Requestor
                 'Accept: application/json',
                 'Authorization: Bearer ' . $apiKey,
             ),
-            CURLOPT_RETURNTRANSFER => 1
+            CURLOPT_FRESH_CONNECT => true,
+            CURLOPT_RETURNTRANSFER => true
         );
-
         // merging with Config::$curlOptions
         if (count(Config::$curlOptions)) {
             if (Config::$curlOptions[CURLOPT_HTTPHEADER]) {
@@ -60,8 +68,10 @@ class Requestor
         }
 
         if ($method == 'POST') {
-            ($dataHash) ? $curl_options['CURLOPT_POSTFIELDS'] = json_encode($dataHash) : $curl_options['CURLOPT_POSTFIELDS'] = '';
-            $curl_options['CURLOPT_POST'] = 1;
+            $curl_options[CURLOPT_POST] = 1;
+            if ($dataHash) {
+                $curl_options[CURLOPT_POSTFIELDS] = json_encode($dataHash);
+            }
         }
 
         curl_setopt_array($ch, $curl_options);

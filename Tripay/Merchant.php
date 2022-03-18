@@ -11,11 +11,11 @@ class Merchant
      */
     public static function getChanelPembayaran($code = null)
     {
-        ($code) ? $url = Config::getBaseUrl() . 'merchant/payment-channel?code=' . $code : $url = Config::getBaseUrl() . 'merchant/payment-channel';
+        ($code) ? $payload = ['code' => $code] : $payload = '';
         return Requestor::get(
-            $url,
+            Config::getBaseUrl() . 'merchant/payment-channel',
             Config::$apiKey,
-            $code,
+            $payload,
         );
     }
 
@@ -30,7 +30,7 @@ class Merchant
     {
         ($code) ? $payload = ['amount' => (int)$ammout, 'code' => $code] : ['amount' => (int)$ammout];
         return Requestor::get(
-            Config::getBaseUrl() . 'merchant/fee-calculator?' . http_build_query($payload),
+            Config::getBaseUrl() . 'merchant/fee-calculator',
             Config::$apiKey,
             $payload,
         );
@@ -38,24 +38,25 @@ class Merchant
 
     /**
      * Get Daftar Transaksi
-     * @param int $page
-     * @param int $per_page
-     * @param String $sort asc,desc
-     * @param String $code
-     * @param String $status
+     * @param mixed $payload
+     * 
+     * @return mixed
      */
-    public static function getListTransaksi($page = 1, $per_page = 25, $sort = 'asc', $status = null)
+    public static function getListTransaksi($payload = null)
     {
-        $payload = [
-            'page' => $page,
-            'per_page' => $per_page,
-            'sort' => $sort,
-            'status' => $status
-        ];
         return Requestor::get(
-            Config::getBaseUrl() . 'merchant/transactions?' . http_build_query($payload),
+            Config::getBaseUrl() . 'merchant/transactions',
             Config::$apiKey,
-            $payload,
+            ($payload) ? $payload : '',
+        );
+    }
+
+    public static function getInstructions($payload = null)
+    {
+        return Requestor::get(
+            Config::getBaseUrl() . 'payment/instruction',
+            Config::$apiKey,
+            ($payload) ? $payload : '',
         );
     }
 }

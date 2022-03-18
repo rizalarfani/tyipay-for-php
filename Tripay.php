@@ -15,4 +15,6 @@ if (!function_exists('json_decode')) {
 
 require_once('Tripay/Config.php');
 require_once('Tripay/Merchant.php');
+require_once('Tripay/Transaction.php');
+require_once('Tripay/Instructions.php');
 require_once('Tripay/Requestor.php');
